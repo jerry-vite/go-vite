@@ -281,7 +281,15 @@ func (l *LedgerApi) SendTx(block *AccountBlock) error {
 	if e != nil {
 		return e
 	}
-	return l.ledgerManager.Ac().CreateTx(accountBlock)
+	err := l.ledgerManager.Ac().CreateTx(accountBlock)
+	if err != nil {
+		newerr, concerned := TryMakeConcernedError(err)
+		if concerned {
+			return newerr
+		}
+		return err
+	}
+	return err
 }
 
 func (l *LedgerApi) GetTokenMintage(tti types.TokenTypeId) (*Mintage, error) {
