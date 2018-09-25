@@ -4,6 +4,8 @@ import (
 	"math/big"
 
 	"bytes"
+	"encoding/hex"
+	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/vitelabs/go-vite/common/types"
 	"github.com/vitelabs/go-vite/crypto"
@@ -195,6 +197,7 @@ func (ab *AccountBlock) ComputeHash() (*types.Hash, error) {
 		source = append(source, []byte(ab.FAmount.String())...)
 	}
 
+	fmt.Println(hex.EncodeToString(source))
 	hash, err := types.BytesToHash(crypto.Hash256(source))
 	if err != nil {
 		return nil, err
