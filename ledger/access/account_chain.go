@@ -225,10 +225,6 @@ func (aca *AccountChainAccess) writeSendBlock(batch *leveldb.Batch, block *ledge
 		return errors.New("Write the send block failed, because the account does not exist.")
 	}
 
-	if block.IsMintageBlock() {
-		return aca.writeMintageBlock(batch, block)
-	}
-
 	if block.TokenId == nil {
 		return errors.New("Write the send block failed, because the token id of block is nil.")
 	}
@@ -384,7 +380,7 @@ func (aca *AccountChainAccess) writeBlock(batch *leveldb.Batch, block *ledger.Ac
 	var latestBlockHeight *big.Int
 
 	needCreateNewAccount := false
-	if block.IsSendBlock() {
+	if block.IsSendBlock() && !block.IsMintageBlock() {
 		err = aca.writeSendBlock(batch, block, accountMeta)
 		// Write account block
 	} else if block.IsReceiveBlock() {
@@ -482,6 +478,13 @@ func (aca *AccountChainAccess) writeBlock(batch *leveldb.Batch, block *ledger.Ac
 		}
 	}
 	accountchainLog.Info("AccountChainAccess writeblock: sign success.")
+
+	// Hack
+	if block.IsMintageBlock() {
+		if err := aca.writeMintageBlock(batch, block); err != nil {
+			accountchainLog.Crit(err.Error())
+		}
+	}
 
 	// Write account meta
 	if err := aca.accountStore.WriteMeta(batch, block.AccountAddress, accountMeta); err != nil {
