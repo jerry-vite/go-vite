@@ -28,30 +28,6 @@ func parseConfig() *config.Config {
 	return globalConfig
 }
 
-//func NewMintageToken() *ledger.AccountBlock {
-//	var owner = "vite_bc02fae8e79de132c1f3b8962f348740cf7801567a34cfc156"
-//	var SnapshotTimestamp, _ = types.HexToHash("c2ccb96d37bb1e721e5ac52d33f4879f995d53e67a045a8b030705b552bc845a")
-//	var tokenId, _ = types.BytesToTokenTypeId([]byte{18, 234, 12, 2, 23, 3, 4, 9, 10, 90})
-//	ab := &ledger.AccountBlock{
-//		//Signature: ,
-//		AccountAddress:    ledger.SnapshotGenesisBlock.Producer,
-//		To:                &ledger.MintageAddress,
-//		TokenId:           &ledger.MockViteTokenId,
-//		Amount:            big.NewInt(0),
-//		SnapshotTimestamp: &SnapshotTimestamp,
-//		Timestamp:         uint64(1538048826),
-//		Data: "{" +
-//			"\"tokenName\": \"Vite Community Point\"," +
-//			"\"tokenSymbol\": \"VCP\"," +
-//			"\"owner\":\"" + owner + "\"," +
-//			"\"decimals\": 0," +
-//			"\"tokenId\":\"" + tokenId.String() + "\"," +
-//			"\"totalSupply\": \"10000000000\"" +
-//			"}",
-//	}
-//	return ab
-//}
-
 func main() {
 	govite.PrintBuildVersion()
 
