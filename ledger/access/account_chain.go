@@ -5,6 +5,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/vitelabs/go-vite/common/types"
+	"github.com/vitelabs/go-vite/crypto"
 	"github.com/vitelabs/go-vite/ledger"
 	"github.com/vitelabs/go-vite/ledger/errors"
 	"github.com/vitelabs/go-vite/log15"
@@ -461,22 +462,50 @@ func (aca *AccountChainAccess) writeBlock(batch *leveldb.Batch, block *ledger.Ac
 		}
 
 		block.Hash = hash
-	}
-	accountchainLog.Info("AccountChainAccess writeblock: set hash success.")
-
-	// Sign
-	if signFunc != nil && block.Signature == nil {
-		var signErr error
-
-		block, signErr = signFunc(block)
-
-		if signErr != nil {
+	} else {
+		cHash, err := block.ComputeHash()
+		if err != nil {
 			return &AcWriteError{
 				Code: WacDefaultErr,
-				Err:  signErr,
+				Err:  err,
+			}
+		}
+
+		if !bytes.Equal(block.Hash.Bytes(), cHash.Bytes()) {
+			return &AcWriteError{
+				Code: WacDefaultErr,
+				Err:  errors.New("block hash is not correct"),
 			}
 		}
 	}
+
+	accountchainLog.Info("AccountChainAccess writeblock: set hash success.")
+
+	// Sign
+	if block.Signature == nil {
+		if signFunc != nil {
+			var signErr error
+
+			block, signErr = signFunc(block)
+
+			if signErr != nil {
+				return &AcWriteError{
+					Code: WacDefaultErr,
+					Err:  signErr,
+				}
+			}
+		}
+	} else if block.PublicKey != nil && block.Hash != nil {
+		// Verify signature
+		isVerified, verifyErr := crypto.VerifySig(block.PublicKey, block.Hash.Bytes(), block.Signature)
+		if verifyErr != nil || !isVerified {
+			return &AcWriteError{
+				Code: WacDefaultErr,
+				Err:  errors.New("signature is not correct"),
+			}
+		}
+	}
+
 	accountchainLog.Info("AccountChainAccess writeblock: sign success.")
 
 	// Hack
