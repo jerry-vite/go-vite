@@ -57,7 +57,8 @@ func defaultConfig() {
 			MinerInterval: 6,
 		},
 		Ledger: &Ledger{
-			IsDownload: true, // Default download ledger zip
+			IsDownload:         true, // Default download ledger zip
+			ResendGenesisBlock: false,
 		},
 		DataDir: common.DefaultDataDir(),
 	}

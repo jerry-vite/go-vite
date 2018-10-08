@@ -54,5 +54,9 @@ func main() {
 		mainLog.Crit("Start vite failed.", "err", err)
 	}
 
+	if parsedConfig.Ledger.ResendGenesisBlock {
+		resender(vnode)
+	}
+
 	rpc_vite.StartIpcRpcEndpoint(vnode, parsedConfig.DataDir)
 }
