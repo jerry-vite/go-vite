@@ -1,12 +1,13 @@
 package p2p
 
 import (
+	"os"
+	"path/filepath"
+
 	"github.com/vitelabs/go-vite/common"
 	"github.com/vitelabs/go-vite/crypto/ed25519"
 	"github.com/vitelabs/go-vite/p2p/discovery"
 	"github.com/vitelabs/go-vite/p2p/network"
-	"os"
-	"path/filepath"
 )
 
 /*
@@ -40,6 +41,7 @@ const (
 	DefaultMaxInboundRatio uint = 2
 	DefaultPort            uint = 8483
 	DefaultNetID                = network.Aquarius
+	DefaultAddress              = "0.0.0.0:8483"
 )
 
 const Dirname = "p2p"
@@ -101,8 +103,8 @@ func EnsureConfig(cfg *Config) *Config {
 		cfg.MaxInboundRatio = DefaultMaxInboundRatio
 	}
 
-	if cfg.Port == 0 {
-		cfg.Port = DefaultPort
+	if cfg.Address == "" {
+		cfg.Address = DefaultAddress
 	}
 
 	if cfg.DataDir == "" {

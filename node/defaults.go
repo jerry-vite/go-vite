@@ -1,11 +1,12 @@
 package node
 
 import (
-	"github.com/vitelabs/go-vite/common"
 	"os"
 	"os/user"
 	"path/filepath"
 	"runtime"
+
+	"github.com/vitelabs/go-vite/common"
 )
 
 var DefaultNodeConfig = Config{
@@ -20,9 +21,9 @@ var DefaultNodeConfig = Config{
 	MaxPassivePeersRatio: 0,
 	MaxPendingPeers:      0,
 	BootNodes:            nil,
-	Port:                 0,
 	NetID:                0,
 	Discovery:            true,
+	PeerAddress:          "0.0.0.0:8483",
 	LogLevel:             "info",
 	WSOrigins:            []string{"*"},
 	WSExposeAll:          true,

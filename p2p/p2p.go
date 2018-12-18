@@ -5,6 +5,11 @@ package p2p
 import (
 	"errors"
 	"fmt"
+	"net"
+	"sync"
+	"sync/atomic"
+	"time"
+
 	"github.com/vitelabs/go-vite/common"
 	"github.com/vitelabs/go-vite/crypto/ed25519"
 	"github.com/vitelabs/go-vite/log15"
@@ -13,11 +18,6 @@ import (
 	"github.com/vitelabs/go-vite/p2p/discovery"
 	"github.com/vitelabs/go-vite/p2p/nat"
 	"github.com/vitelabs/go-vite/p2p/network"
-	"net"
-	"strconv"
-	"sync"
-	"sync/atomic"
-	"time"
 )
 
 var errSvrStarted = errors.New("server has started")
@@ -62,12 +62,12 @@ type Config struct {
 	MaxPeers        uint               // max peers can be connected
 	MaxPendingPeers uint               // max peers waiting for connect
 	MaxInboundRatio uint               // max inbound peers: MaxPeers / MaxInboundRatio
-	Port            uint               // TCP and UDP listen port
 	DataDir         string             // the directory for storing node table, default is "~/viteisbest/p2p"
 	PrivateKey      ed25519.PrivateKey // use for encrypt message, the corresponding public key use for NodeID
 	Protocols       []*Protocol        // protocols server supported
 	BootNodes       []string           // nodes as discovery seed
 	StaticNodes     []string           // nodes to connect
+	Address         string
 }
 
 type Server struct {
@@ -97,10 +97,8 @@ type Server struct {
 func New(cfg *Config) (svr *Server, err error) {
 	cfg = EnsureConfig(cfg)
 
-	addr := "0.0.0.0:" + strconv.FormatUint(uint64(cfg.Port), 10)
-
 	// tcp listener
-	tcpAddr, err := net.ResolveTCPAddr("tcp", addr)
+	tcpAddr, err := net.ResolveTCPAddr("tcp", cfg.Address)
 	if err != nil {
 		return
 	}
@@ -136,7 +134,7 @@ func New(cfg *Config) (svr *Server, err error) {
 	if cfg.Discovery {
 		// udp discover
 		var udpAddr *net.UDPAddr
-		udpAddr, err = net.ResolveUDPAddr("udp", addr)
+		udpAddr, err = net.ResolveUDPAddr("udp", cfg.Address)
 		if err != nil {
 			return
 		}
@@ -261,7 +259,6 @@ func (svr *Server) setHandshake() {
 		Name:    svr.Name,
 		ID:      svr.self.ID,
 		CmdSets: cmds,
-		Port:    uint16(svr.Port),
 	}
 }
 

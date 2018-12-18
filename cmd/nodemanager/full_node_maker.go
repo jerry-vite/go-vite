@@ -85,10 +85,6 @@ func mappingNodeConfig(ctx *cli.Context, cfg *node.Config) {
 		cfg.MaxPendingPeers = ctx.GlobalUint(utils.MaxPendingPeersFlag.Name)
 	}
 
-	if ctx.GlobalIsSet(utils.ListenPortFlag.Name) {
-		cfg.Port = ctx.GlobalUint(utils.ListenPortFlag.Name)
-	}
-
 	if nodeKeyHex := ctx.GlobalString(utils.NodeKeyHexFlag.Name); len(nodeKeyHex) > 0 {
 		cfg.SetPrivateKey(nodeKeyHex)
 	}

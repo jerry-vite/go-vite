@@ -8,7 +8,6 @@ message Handshake {
     repeated uint32 CmdSets = 3;
     bytes RemoteIP = 4;
 	uint32 RemotePort = 5;
-    uint32 Port = 6;
 }
 
 message ConnProperty {

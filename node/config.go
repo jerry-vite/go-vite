@@ -42,9 +42,9 @@ type Config struct {
 	MaxPendingPeers      uint     `json:"MaxPendingPeers"`
 	BootNodes            []string `json:"BootNodes"`
 	StaticNodes          []string `json:"StaticNodes"`
-	Port                 uint     `json:"Port"`
 	NetID                uint     `json:"NetID"`
 	Discovery            bool     `json:"Discovery"`
+	PeerAddress          string   `json:"PeerAddress"`
 
 	//producer
 	EntropyStorePath     string `json:"EntropyStorePath"`
@@ -152,12 +152,12 @@ func (c *Config) makeP2PConfig() *p2p.Config {
 		MaxPeers:        c.MaxPeers,
 		MaxPendingPeers: c.MaxPendingPeers,
 		MaxInboundRatio: c.MaxPassivePeersRatio,
-		Port:            c.Port,
 		DataDir:         filepath.Join(c.DataDir, p2p.Dirname),
 		PrivateKey:      c.GetPrivateKey(),
 		BootNodes:       c.BootNodes,
 		StaticNodes:     c.StaticNodes,
 		Discovery:       c.Discovery,
+		Address:         c.PeerAddress,
 	}
 }
 
